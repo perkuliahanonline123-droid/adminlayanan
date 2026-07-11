@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sijillāt | Monitoring Ajuan KHS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'], serif: ['Playfair Display', 'serif'] },
+                    colors: { 
+                        brand: { 950: '#022c22', 900: '#064e3b', 800: '#065f46', 700: '#047857', 600: '#059669', 500: '#10b981', 100: '#d1fae5', 50: '#f0fdf4' } 
+                    },
+                    boxShadow: {
+                        'timbul': '0 20px 40px -15px rgba(2, 44, 34, 0.12), 0 15px 30px -20px rgba(5, 150, 105, 0.15), inset 0 1px 0 rgba(255,255,255,0.6)',
+                        'timbul-lg': '0 30px 60px -15px rgba(2, 44, 34, 0.2), 0 25px 45px -20px rgba(5, 150, 105, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F8FAFC; }
+        .bg-mesh { background-color: #064e3b; background-image: radial-gradient(at 0% 0%, #065f46 0px, transparent 50%), radial-gradient(at 100% 100%, #047857 0px, transparent 50%); }
+        .animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shimmer { 100% { transform: translateX(100%); } }
+        html { scroll-behavior: smooth; }
+        a { -webkit-tap-highlight-color: transparent; }
+        
+        /* Custom scrollbar untuk list */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-800 font-sans antialiased">
+
+    <main class="flex-1 w-full max-w-3xl mx-auto px-4 md:px-6 py-8 md:pb-12">
+        <div class="space-y-8">
+            
+            <div class="bg-mesh rounded-[2.5rem] p-8 md:p-14 text-white shadow-timbul-lg text-center relative overflow-hidden border border-white/10 animate-slide-up">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                <span class="text-xs font-bold tracking-widest text-brand-100 uppercase mb-4 inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/10">Admin Dashboard</span>
+                <h1 class="font-serif text-4xl md:text-5xl leading-tight mb-5 font-bold tracking-tight">Monitoring Ajuan</h1>
+                <p class="text-brand-100/90 text-sm md:text-base max-w-xl mx-auto leading-relaxed font-normal">Pantau status antrean layanan akademik dan lakukan tindak lanjut secara real-time.</p>
+            </div>
+
+            <div class="bg-white rounded-[2.5rem] shadow-timbul border border-slate-200/60 p-6 md:p-10 animate-slide-up" style="animation-delay: 0.1s;">
+                <div class="flex items-center gap-4 mb-6 pb-4 border-b border-slate-100">
+                    <div class="w-12 h-12 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center shadow-inner">
+                        <i class="fas fa-file-signature text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-extrabold text-2xl text-slate-800 tracking-tight" id="judulLayanan">Kartu Hasil Studi</h2>
+                        <p class="text-sm font-medium text-slate-500">Antrean berkas yang menunggu proses</p>
+                    </div>
+                </div>
+
+                <div id="loadingLayanan" class="text-center py-12">
+                    <div class="inline-block relative w-10 h-10 mb-4">
+                        <div class="absolute inset-0 border-4 border-brand-100 rounded-full"></div>
+                        <div class="absolute inset-0 border-4 border-brand-600 rounded-full border-t-transparent animate-spin"></div>
+                    </div>
+                    <p class="text-slate-500 text-sm font-semibold">Mengambil data terbaru...</p>
+                </div>
+
+                <div id="errorState" class="hidden text-center py-8">
+                    <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-triangle text-2xl"></i>
+                    </div>
+                    <p class="text-rose-600 font-bold mb-1">Gagal Memuat Data</p>
+                    <p class="text-slate-500 text-sm" id="pesanError"></p>
+                </div>
+
+                <div id="dashboard-container" class="hidden">
+                    
+                    <div class="bg-gradient-to-br from-brand-50 to-white border border-brand-100 rounded-[2rem] p-8 text-center mb-8 shadow-sm relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-brand-100/50">
+                            <i class="fas fa-clock text-9xl"></i>
+                        </div>
+                        <div class="relative z-10">
+                            <div id="jumlahAjuan" class="text-6xl font-black text-brand-700 mb-2 drop-shadow-sm">0</div>
+                            <div class="text-brand-600 font-bold uppercase tracking-widest text-sm">Ajuan Tertunda</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200/80 rounded-[1.5rem] p-5 md:p-6 mb-8 max-h-72 overflow-y-auto custom-scrollbar shadow-inner">
+                        <ul id="listUmur" class="divide-y divide-slate-200/60 m-0 p-0 list-none">
+                            </ul>
+                    </div>
+
+                    <div class="flex justify-center border-t border-slate-100 pt-8" id="wadahTombolAksi">
+                        </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full text-center py-8 text-slate-400 text-xs font-bold tracking-wider">
+        &copy; 2026 Portal Layanan Akademik
+    </footer>
+
+    <script>
+        // URL API Google Apps Script dari permintaan Anda
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz6WmipOLEkRgbeX1DiTlbGl-U0QgcAKqTOfoUS4ceAwHtt7McInBmlNDi5MI7hPEQ/exec';
+
+        async function fetchUmurAjuan() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getUmurAjuan&layanan=Kartu Hasil Studi`);
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+
+                renderDashboard(data);
+            } catch (error) {
+                showError("Tidak dapat terhubung ke server Google. Pastikan script sudah di-deploy sebagai Web App.");
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loadingLayanan').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+            document.getElementById('pesanError').innerText = message;
+        }
+
+        function renderDashboard(data) {
+            document.getElementById('loadingLayanan').classList.add('hidden');
+            document.getElementById('dashboard-container').classList.remove('hidden');
+            document.getElementById('dashboard-container').classList.add('animate-slide-up');
+
+            // Update Header & Count
+            document.getElementById('judulLayanan').innerText = data.layanan || "Kartu Hasil Studi";
+            document.getElementById('jumlahAjuan').innerText = data.jumlah || "0";
+
+            // Render List Umur
+            let listHtml = '';
+            if (data.umurData && data.umurData.length > 0) {
+                data.umurData.forEach((umur, index) => {
+                    listHtml += `
+                        <li class="py-3.5 flex items-center justify-between text-slate-600 group hover:bg-slate-100/50 rounded-xl px-3 transition-colors -mx-3">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-400 flex items-center justify-center mr-4 shadow-sm text-xs font-bold">
+                                    ${index + 1}
+                                </div>
+                                <span class="font-medium text-sm md:text-base">Menunggu <span class="font-bold text-brand-700">${umur}</span></span>
+                            </div>
+                            <i class="fas fa-hourglass-half text-amber-400 opacity-60 group-hover:opacity-100 transition-opacity"></i>
+                        </li>
+                    `;
+                });
+            } else {
+                listHtml = `
+                    <li class="py-10 flex flex-col items-center justify-center text-slate-400 text-center">
+                        <div class="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-3">
+                            <i class="fas fa-check text-2xl text-emerald-500"></i>
+                        </div>
+                        <span class="font-bold text-slate-600">Tidak ada antrean</span>
+                        <span class="text-sm mt-1">Semua berkas telah diselesaikan!</span>
+                    </li>
+                `;
+            }
+            document.getElementById('listUmur').innerHTML = listHtml;
+
+            // Render Tombol Tindak Lanjut (Menggunakan gaya tombol template V2)
+            if (data.linkAksi) {
+                document.getElementById('wadahTombolAksi').innerHTML = `
+                    <a href="${data.linkAksi}" target="_blank" class="w-full md:w-auto group relative inline-flex justify-center items-center gap-5 px-8 py-4 bg-gradient-to-b from-brand-600 to-brand-800 text-white rounded-[1.25rem] shadow-[0_12px_30px_-10px_rgba(4,120,87,0.7),inset_0_1px_0_rgba(255,255,255,0.3)] hover:shadow-[0_20px_40px_-10px_rgba(4,120,87,0.9),inset_0_1px_0_rgba(255,255,255,0.5)] hover:-translate-y-1.5 active:translate-y-0 active:shadow-[0_5px_15px_-5px_rgba(4,120,87,0.7)] transition-all duration-300 border border-brand-900/50 overflow-hidden no-underline">
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                        <div class="relative w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300 z-10 shadow-inner">
+                            <i class="fas fa-external-link-alt text-xl -rotate-12 group-hover:rotate-0 transition-transform duration-300"></i>
+                        </div>
+                        <div class="relative flex flex-col text-left z-10 pr-2">
+                            <span class="text-[10px] uppercase tracking-widest text-brand-100/80 font-bold mb-0.5">Tindak Lanjut</span>
+                            <span class="font-extrabold text-lg leading-none tracking-wide">Buka Spreadsheet</span>
+                        </div>
+                    </a>
+                `;
+            }
+        }
+
+        // Jalankan fetch data ketika web di load
+        window.onload = fetchUmurAjuan;
+    </script>
+</body>
+</html>
