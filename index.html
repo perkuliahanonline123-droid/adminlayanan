@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Warna Theme untuk Address Bar HP agar menyatu sampai atas -->
     <meta name="theme-color" content="#064e3b">
     <title>Admin Dashboard Layanan</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,12 +28,11 @@
         }
     </script>
     <style>
-        body { background-color: #F8FAFC; }
+        body { background-color: #F8FAFC; -webkit-tap-highlight-color: transparent; }
         .bg-mesh { background-color: #064e3b; background-image: radial-gradient(at 0% 0%, #065f46 0px, transparent 50%), radial-gradient(at 100% 100%, #047857 0px, transparent 50%); }
-        .animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
         html { scroll-behavior: smooth; }
-        a { -webkit-tap-highlight-color: transparent; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
         /* Custom scrollbar untuk list */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -42,17 +43,37 @@
 </head>
 <body class="flex flex-col min-h-screen text-slate-800 font-sans antialiased">
 
-    <main class="flex-1 w-full max-w-7xl mx-auto px-4 md:px-6 py-8 md:pb-12">
-        <div class="space-y-8">
+    <!-- HEADER (Desain Rata Kiri & Lebar Penuh persis gambar kiri) -->
+    <header class="w-full bg-mesh text-white px-6 md:px-10 pt-12 md:pt-16 pb-24 md:pb-28 rounded-b-[2rem] md:rounded-b-[3rem] shadow-timbul-lg relative overflow-hidden animate-slide-up z-10">
+        <!-- Efek Blur Cahaya -->
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+        
+        <div class="relative z-10 flex flex-col items-start text-left max-w-7xl mx-auto w-full">
+            <span class="text-[10px] md:text-xs font-bold tracking-widest text-brand-100 uppercase mb-3 inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/10">Admin Dashboard</span>
+            <h1 class="font-serif text-3xl md:text-5xl font-bold leading-tight">Monitoring Seluruh Layanan</h1>
+            <p class="text-brand-100/90 text-sm md:text-base mt-2 md:mt-3 max-w-2xl font-normal">Pantau antrean dari semua jenis layanan administrasi akademik dalam satu tempat.</p>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA (Wadah putih besar tumpang tindih ke atas) -->
+    <main class="w-full max-w-7xl mx-auto px-4 md:px-8 -mt-12 md:-mt-16 relative z-20 space-y-6 pb-12 flex-1">
+        
+        <!-- Kotak Putih Utama (Identik dengan pembungkus "Daftar Layanan" di gambar kiri) -->
+        <div class="bg-white rounded-3xl md:rounded-[2.5rem] shadow-sm md:shadow-md border border-slate-100 p-5 md:p-10 w-full min-h-[50vh] animate-slide-up" style="animation-delay: 0.1s;">
             
-            <div class="bg-mesh rounded-[2.5rem] p-8 md:p-12 text-white shadow-timbul-lg text-center relative overflow-hidden border border-white/10 animate-slide-up">
-                <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
-                <span class="text-xs font-bold tracking-widest text-brand-100 uppercase mb-3 inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/10">Admin Dashboard</span>
-                <h1 class="font-serif text-3xl md:text-5xl leading-tight mb-4 font-bold tracking-tight">Monitoring Seluruh Layanan</h1>
-                <p class="text-brand-100/90 text-sm md:text-base max-w-2xl mx-auto leading-relaxed font-normal">Pantau antrean dari semua jenis layanan administrasi akademik dalam satu tempat.</p>
+            <!-- Judul Dalam Kotak Putih -->
+            <div class="flex items-center gap-3 md:gap-4 mb-6 pb-4 border-b border-slate-100">
+                <div class="w-12 h-12 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center shadow-inner shrink-0">
+                    <i class="fas fa-chart-pie text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="font-extrabold text-xl md:text-2xl text-slate-800 leading-none">Status Antrean</h2>
+                    <p class="text-xs md:text-sm font-medium text-slate-500 mt-1">Daftar berkas yang sedang menunggu proses</p>
+                </div>
             </div>
 
-            <div id="loadingData" class="text-center py-16 animate-slide-up" style="animation-delay: 0.1s;">
+            <!-- Loading State -->
+            <div id="loadingData" class="text-center py-16">
                 <div class="inline-block relative w-12 h-12 mb-4">
                     <div class="absolute inset-0 border-4 border-brand-100 rounded-full"></div>
                     <div class="absolute inset-0 border-4 border-brand-600 rounded-full border-t-transparent animate-spin"></div>
@@ -60,42 +81,58 @@
                 <p class="text-slate-500 text-sm font-semibold">Mengambil data layanan terbaru...</p>
             </div>
 
-            <div id="errorState" class="hidden text-center py-12 bg-white rounded-3xl border border-rose-100 shadow-sm">
-                <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <!-- Error State -->
+            <div id="errorState" class="hidden text-center py-12 bg-rose-50 rounded-2xl md:rounded-[2rem] border border-rose-100">
+                <div class="w-16 h-16 bg-white text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
                     <i class="fas fa-exclamation-triangle text-2xl"></i>
                 </div>
                 <p class="text-rose-600 font-bold mb-1">Gagal Memuat Data</p>
                 <p class="text-slate-500 text-sm" id="pesanError"></p>
             </div>
 
-            <div id="dashboard-container" class="hidden grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                </div>
+            <!-- Grid Hasil Data Seluruh Layanan -->
+            <div id="dashboard-container" class="hidden grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6">
+                <!-- Kartu layanan akan di-render di sini oleh JavaScript -->
+            </div>
 
         </div>
     </main>
 
-    <footer class="w-full text-center py-8 text-slate-400 text-xs font-bold tracking-wider mt-auto border-t border-slate-200">
+    <footer class="w-full text-center py-8 text-slate-400 text-xs font-bold tracking-wider mt-auto border-t border-slate-200 bg-white z-10">
         &copy; 2026 Admin Administrasi Akademik
     </footer>
 
     <script>
-        // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
+        // URL SCRIPT ADMIN DASHBOARD
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz6WmipOLEkRgbeX1DiTlbGl-U0QgcAKqTOfoUS4ceAwHtt7McInBmlNDi5MI7hPEQ/exec';
 
         async function fetchSemuaLayanan() {
+            const dataLama = localStorage.getItem('sijillat_cache');
+            
+            if (dataLama) {
+                renderDashboard(JSON.parse(dataLama));
+                const loadingEl = document.getElementById('loadingData');
+                loadingEl.classList.remove('py-16');
+                loadingEl.innerHTML = `<p class="text-brand-600 bg-brand-50 rounded-full py-2 px-4 border border-brand-100 text-xs font-bold animate-pulse text-center w-fit mx-auto mb-4"><i class="fas fa-sync fa-spin mr-1.5"></i> Memperbarui data...</p>`;
+                loadingEl.classList.remove('hidden');
+            }
+
             try {
-                // Memanggil parameter getAllUmurAjuan yang baru
                 const response = await fetch(`${SCRIPT_URL}?action=getAllUmurAjuan`);
                 const result = await response.json();
 
                 if (result.error) {
-                    showError(result.error);
+                    if (!dataLama) showError(result.error);
                     return;
                 }
 
+                localStorage.setItem('sijillat_cache', JSON.stringify(result.data));
                 renderDashboard(result.data);
             } catch (error) {
-                showError("Tidak dapat terhubung ke server Google. Pastikan script telah di-deploy dengan benar.");
+                if (!dataLama) {
+                    showError("Tidak dapat terhubung ke server Google. Pastikan koneksi internet stabil.");
+                }
+                document.getElementById('loadingData').classList.add('hidden');
             }
         }
 
@@ -112,17 +149,14 @@
 
             let gridHtml = '';
 
-            // Looping seluruh layanan (KHS, SKL, Mutasi, dll)
             dataArray.forEach((layanan, index) => {
-                
                 let listHtml = '';
                 let warnaBadge = layanan.jumlah > 0 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700';
 
                 if (layanan.umurData && layanan.umurData.length > 0) {
-                    // Render daftar usia, tombol aksi dibuat TEPAT DI KANAN masing-masing list
                     layanan.umurData.forEach((umur, idx) => {
                         listHtml += `
-                            <li class="py-3 flex items-center justify-between text-slate-600 hover:bg-slate-100/70 rounded-xl px-2 transition-colors border-b border-slate-100 last:border-0 -mx-2">
+                            <li class="py-3 flex items-center justify-between text-slate-600 hover:bg-slate-50 rounded-xl px-2 transition-colors border-b border-slate-100 last:border-0 -mx-2">
                                 <div class="flex items-center gap-3">
                                     <div class="w-7 h-7 rounded-full bg-white border border-slate-200 text-slate-400 flex items-center justify-center shadow-sm text-[10px] font-bold shrink-0">
                                         ${idx + 1}
@@ -146,29 +180,26 @@
                     `;
                 }
 
-                // Desain Kartu (Card) per Layanan
+                // Karena dibungkus wadah putih, background card diubah menjadi slate-50 agar menonjol
                 gridHtml += `
-                    <div class="bg-white rounded-[2rem] shadow-timbul border border-slate-200/60 p-6 flex flex-col h-full animate-slide-up" style="animation-delay: ${index * 0.05}s;">
-                        
+                    <div class="bg-slate-50 rounded-[1.5rem] md:rounded-[2rem] border border-slate-200/80 p-5 md:p-6 flex flex-col h-full animate-slide-up" style="animation-delay: ${index * 0.05}s;">
                         <div class="flex items-start justify-between mb-4 gap-2">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-brand-50 text-brand-600 rounded-[12px] flex items-center justify-center shadow-inner shrink-0">
+                                <div class="w-10 h-10 bg-white text-brand-600 rounded-[12px] flex items-center justify-center shadow-sm border border-slate-100 shrink-0">
                                     <i class="fas fa-folder-open text-sm"></i>
                                 </div>
                                 <h3 class="font-extrabold text-lg text-slate-800 leading-tight">${layanan.layanan}</h3>
                             </div>
-                            <div class="${warnaBadge} px-3 py-1.5 rounded-xl text-xs font-black shadow-sm flex flex-col items-center shrink-0 border border-white/50">
+                            <div class="${warnaBadge} px-3 py-1.5 rounded-xl text-xs font-black shadow-sm flex flex-col items-center shrink-0 border border-slate-200/60">
                                 <span class="text-lg leading-none">${layanan.jumlah}</span>
                                 <span class="text-[9px] uppercase tracking-wider opacity-80 mt-0.5">Ajuan</span>
                             </div>
                         </div>
-
-                        <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex-1 overflow-y-auto custom-scrollbar shadow-inner" style="max-height: 250px;">
+                        <div class="bg-white border border-slate-200/80 rounded-2xl p-4 flex-1 overflow-y-auto custom-scrollbar shadow-sm" style="max-height: 250px;">
                             <ul class="m-0 p-0 list-none">
                                 ${listHtml}
                             </ul>
                         </div>
-                        
                     </div>
                 `;
             });
@@ -176,7 +207,6 @@
             container.innerHTML = gridHtml;
         }
 
-        // Jalankan fetch otomatis saat web dimuat
         window.onload = fetchSemuaLayanan;
     </script>
 </body>
